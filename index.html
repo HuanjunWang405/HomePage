@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cerulean Vector LLC — AI-Powered App Development</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --cerulean: #0099dd;
+            --cerulean-light: #33ccff;
+            --cerulean-dark: #006699;
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-card: #1a2332;
+            --text-primary: #e8edf5;
+            --text-secondary: #8892a4;
+            --accent-glow: rgba(0, 153, 221, 0.15);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* ── Grid background ── */
+        .grid-bg {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,153,221,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,153,221,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── Canvas for particles ── */
+        #particles {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ── Nav ── */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(20px);
+            background: rgba(10, 14, 23, 0.8);
+            border-bottom: 1px solid rgba(0,153,221,0.1);
+        }
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--cerulean), var(--cerulean-light));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover { color: var(--cerulean-light); }
+
+        /* ── Sections ── */
+        section {
+            position: relative;
+            z-index: 1;
+            padding: 8rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ── Hero ── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-top: 6rem;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            border: 1px solid rgba(0,153,221,0.3);
+            border-radius: 100px;
+            font-size: 0.8rem;
+            color: var(--cerulean-light);
+            background: var(--accent-glow);
+            width: fit-content;
+            margin-bottom: 2rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .hero-badge .pulse {
+            width: 8px;
+            height: 8px;
+            background: var(--cerulean-light);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(51,204,255,0.5); }
+            50% { opacity: 0.7; box-shadow: 0 0 0 8px rgba(51,204,255,0); }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.8rem, 6vw, 5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            margin-bottom: 1.5rem;
+        }
+        .hero h1 .gradient {
+            background: linear-gradient(135deg, var(--cerulean-light), var(--cerulean), #7c5cfc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 560px;
+            line-height: 1.7;
+            margin-bottom: 2.5rem;
+        }
+        .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .btn {
+            padding: 0.85rem 2rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--cerulean), var(--cerulean-dark));
+            color: #fff;
+            box-shadow: 0 4px 24px rgba(0,153,221,0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0,153,221,0.5);
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .btn-outline:hover {
+            border-color: var(--cerulean);
+            background: var(--accent-glow);
+        }
+
+        /* ── Terminal block in hero ── */
+        .terminal {
+            margin-top: 4rem;
+            background: var(--bg-secondary);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            overflow: hidden;
+            max-width: 700px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+        .terminal-header {
+            padding: 0.75rem 1rem;
+            background: rgba(255,255,255,0.03);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .terminal-dot:nth-child(1) { background: #ff5f57; }
+        .terminal-dot:nth-child(2) { background: #ffbd2e; }
+        .terminal-dot:nth-child(3) { background: #28ca41; }
+        .terminal-body {
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+        .terminal-body .prompt { color: var(--cerulean-light); }
+        .terminal-body .cmd { color: var(--text-primary); }
+        .terminal-body .output { color: #28ca41; }
+        .terminal-body .comment { color: #555; }
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: var(--cerulean-light);
+            animation: blink 1s step-end infinite;
+            vertical-align: text-bottom;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* ── Section headers ── */
+        .section-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--cerulean);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 1rem;
+        }
+        .section-desc {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            line-height: 1.7;
+            margin-bottom: 3.5rem;
+        }
+
+        /* ── Services ── */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+        .service-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cerulean), transparent);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        .service-card:hover {
+            border-color: rgba(0,153,221,0.2);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+        }
+        .service-card:hover::before { opacity: 1; }
+        .service-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--accent-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(0,153,221,0.2);
+        }
+        .service-card h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        .service-card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+        .service-tag {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(0,153,221,0.1);
+            color: var(--cerulean-light);
+            border: 1px solid rgba(0,153,221,0.15);
+        }
+
+        /* ── Tech Stack ── */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .tech-item {
+            text-align: center;
+            padding: 1.5rem 1rem;
+            border-radius: 12px;
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.06);
+            transition: all 0.3s;
+        }
+        .tech-item:hover {
+            border-color: rgba(0,153,221,0.3);
+            background: rgba(0,153,221,0.05);
+        }
+        .tech-item .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .tech-item .name {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        /* ── Process ── */
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 2rem;
+            counter-reset: step;
+        }
+        .process-step {
+            position: relative;
+            padding: 2rem;
+            counter-increment: step;
+        }
+        .process-step::before {
+            content: counter(step, decimal-leading-zero);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 3rem;
+            font-weight: 700;
+            color: rgba(0,153,221,0.15);
+            display: block;
+            margin-bottom: 1rem;
+        }
+        .process-step h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+        }
+        .process-step p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        /* ── About ── */
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        .about-text p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        .stat {
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.06);
+            text-align: center;
+        }
+        .stat .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--cerulean-light);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .stat .label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.3rem;
+        }
+
+        /* ── Contact ── */
+        .contact-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+        .contact-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+        .contact-info p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+        .contact-links { list-style: none; }
+        .contact-links li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        .contact-links .link-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: var(--accent-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .contact-form {
+            background: var(--bg-card);
+            padding: 2.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+            outline: none;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--cerulean);
+            box-shadow: 0 0 0 3px rgba(0,153,221,0.1);
+        }
+        .form-group textarea { resize: vertical; min-height: 120px; }
+
+        /* ── Footer ── */
+        footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 3rem 2rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        footer a {
+            color: var(--cerulean);
+            text-decoration: none;
+        }
+
+        /* ── Glow orbs ── */
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .glow-orb-1 {
+            width: 500px;
+            height: 500px;
+            background: rgba(0,153,221,0.08);
+            top: -100px;
+            right: -200px;
+        }
+        .glow-orb-2 {
+            width: 400px;
+            height: 400px;
+            background: rgba(124,92,252,0.06);
+            bottom: -150px;
+            left: -150px;
+        }
+
+        /* ── Animations ── */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s, transform 0.8s;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ── Mobile ── */
+        @media (max-width: 768px) {
+            nav { padding: 1rem; }
+            .nav-links { display: none; }
+            section { padding: 5rem 1.2rem; }
+            .about-content { grid-template-columns: 1fr; gap: 2rem; }
+            .contact-wrapper { grid-template-columns: 1fr; }
+            .services-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<canvas id="particles"></canvas>
+
+<nav>
+    <div class="logo">
+        <div class="logo-icon">CV</div>
+        <span>Cerulean Vector</span>
+    </div>
+    <ul class="nav-links">
+        <li><a href="#services">Services</a></li>
+        <li><a href="#process">Process</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+    </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+
+    <div class="hero-badge">
+        <span class="pulse"></span>
+        AI-NATIVE DEVELOPMENT
+    </div>
+
+    <h1>
+        Build Smarter Apps<br>
+        with <span class="gradient">AI at the Core</span>
+    </h1>
+    <p>Cerulean Vector LLC crafts intelligent applications powered by cutting-edge AI. From concept to deployment, we turn bold ideas into production-ready products.</p>
+
+    <div class="hero-buttons">
+        <a href="mailto:support@ceruleanvector.com" class="btn btn-primary">Start a Project</a>
+    </div>
+
+    <div class="terminal">
+        <div class="terminal-header">
+            <span class="terminal-dot"></span>
+            <span class="terminal-dot"></span>
+            <span class="terminal-dot"></span>
+        </div>
+        <div class="terminal-body">
+            <div><span class="prompt">$</span> <span class="cmd">cerulean-vector init --project "your-next-app"</span></div>
+            <div><span class="comment"># Initializing AI pipeline...</span></div>
+            <div><span class="output">&#10003; LLM integration configured</span></div>
+            <div><span class="output">&#10003; Vector database connected</span></div>
+            <div><span class="output">&#10003; Deployment pipeline ready</span></div>
+            <div><span class="prompt">$</span> <span class="cursor"></span></div>
+        </div>
+    </div>
+</section>
+
+<!-- Services -->
+<section id="services">
+    <div class="section-label fade-in">// services</div>
+    <h2 class="section-title fade-in">What We Build</h2>
+    <p class="section-desc fade-in">We specialize in AI-powered applications that solve real problems — not buzzword demos.</p>
+
+    <div class="services-grid">
+        <div class="service-card fade-in">
+            <div class="service-icon">&#129302;</div>
+            <h3>AI-Powered Apps</h3>
+            <p>Full-stack applications with embedded intelligence — chatbots, recommendation engines, smart automation, and beyond.</p>
+            <span class="service-tag">LLM / RAG / Agents</span>
+        </div>
+        <div class="service-card fade-in">
+            <div class="service-icon">&#128202;</div>
+            <h3>Data & ML Pipelines</h3>
+            <p>End-to-end data infrastructure — from ingestion and processing to model training and real-time inference.</p>
+            <span class="service-tag">MLOps / ETL / Streaming</span>
+        </div>
+        <div class="service-card fade-in">
+            <div class="service-icon">&#9889;</div>
+            <h3>Rapid Prototyping</h3>
+            <p>Go from napkin sketch to working prototype in days. We validate ideas fast so you can iterate with confidence.</p>
+            <span class="service-tag">MVP / POC / Hackathon</span>
+        </div>
+        <div class="service-card fade-in">
+            <div class="service-icon">&#128272;</div>
+            <h3>API & Integration</h3>
+            <p>Connect your systems with robust APIs. We integrate AI capabilities into your existing tech stack seamlessly.</p>
+            <span class="service-tag">REST / GraphQL / Webhooks</span>
+        </div>
+        <div class="service-card fade-in">
+            <div class="service-icon">&#128241;</div>
+            <h3>Mobile & Cross-Platform</h3>
+            <p>Native-quality apps for iOS, Android, and web — all from a single intelligent codebase.</p>
+            <span class="service-tag">React Native / Flutter</span>
+        </div>
+        <div class="service-card fade-in">
+            <div class="service-icon">&#9729;&#65039;</div>
+            <h3>Cloud & DevOps</h3>
+            <p>Scalable cloud architecture with CI/CD, monitoring, and auto-scaling — built for AI workloads from day one.</p>
+            <span class="service-tag">AWS / GCP / Docker</span>
+        </div>
+    </div>
+</section>
+
+<!-- Tech Stack -->
+<section id="tech">
+    <div class="section-label fade-in">// tech_stack</div>
+    <h2 class="section-title fade-in">Technologies We Use</h2>
+    <div class="tech-grid fade-in">
+        <div class="tech-item"><div class="icon">&#129504;</div><div class="name">OpenAI</div></div>
+        <div class="tech-item"><div class="icon">&#9883;</div><div class="name">Claude</div></div>
+        <div class="tech-item"><div class="icon">&#128640;</div><div class="name">LangChain</div></div>
+        <div class="tech-item"><div class="icon">&#128300;</div><div class="name">PyTorch</div></div>
+        <div class="tech-item"><div class="icon">&#9883;</div><div class="name">React</div></div>
+        <div class="tech-item"><div class="icon">&#9889;</div><div class="name">Next.js</div></div>
+        <div class="tech-item"><div class="icon">&#128051;</div><div class="name">PostgreSQL</div></div>
+        <div class="tech-item"><div class="icon">&#128204;</div><div class="name">Pinecone</div></div>
+    </div>
+</section>
+
+<!-- Process -->
+<section id="process">
+    <div class="section-label fade-in">// process</div>
+    <h2 class="section-title fade-in">How We Work</h2>
+    <p class="section-desc fade-in">Lean, iterative, and transparent. We ship fast and communicate faster.</p>
+
+    <div class="process-steps">
+        <div class="process-step fade-in">
+            <h3>Discover</h3>
+            <p>We deep-dive into your problem space, define success metrics, and map out the AI opportunity.</p>
+        </div>
+        <div class="process-step fade-in">
+            <h3>Prototype</h3>
+            <p>Rapid proof-of-concept to validate the approach. Real data, real models, real feedback.</p>
+        </div>
+        <div class="process-step fade-in">
+            <h3>Build</h3>
+            <p>Production-grade development with weekly demos. Clean code, tested pipelines, solid infra.</p>
+        </div>
+        <div class="process-step fade-in">
+            <h3>Launch & Scale</h3>
+            <p>Deploy, monitor, and iterate. We stick around to make sure things run smoothly at scale.</p>
+        </div>
+    </div>
+</section>
+
+<!-- About -->
+<section id="about">
+    <div class="section-label fade-in">// about</div>
+    <h2 class="section-title fade-in">About Cerulean Vector</h2>
+
+    <div class="about-content fade-in">
+        <div class="about-text">
+            <p>Cerulean Vector LLC is an AI-native development studio. We believe the best software is built at the intersection of human creativity and machine intelligence.</p>
+            <p>Our team lives and breathes AI — from large language models and vector search to computer vision and edge computing. We don't just use AI as a feature; we architect entire systems around it.</p>
+            <p>Whether you're a startup with a wild idea or an enterprise looking to modernize, we're here to make it happen — fast, clean, and scalable.</p>
+        </div>
+        <div class="stats-grid">
+            <div class="stat">
+                <div class="number">50+</div>
+                <div class="label">Projects Delivered</div>
+            </div>
+            <div class="stat">
+                <div class="number">99.9%</div>
+                <div class="label">Uptime SLA</div>
+            </div>
+            <div class="stat">
+                <div class="number">3x</div>
+                <div class="label">Faster to Market</div>
+            </div>
+            <div class="stat">
+                <div class="number">24/7</div>
+                <div class="label">Support & Monitoring</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact -->
+<section id="contact">
+    <div class="section-label fade-in">// contact</div>
+    <h2 class="section-title fade-in">Let's Build Something</h2>
+    <p class="section-desc fade-in">Got an idea? Drop us a line. No pitch decks required.</p>
+
+    <div class="contact-wrapper fade-in">
+        <div class="contact-info">
+            <h3>Get in Touch</h3>
+            <p>We're always open to interesting projects and collaborations. Tell us about your idea and we'll get back to you within 24 hours.</p>
+            <ul class="contact-links">
+                <li>
+                    <span class="link-icon">&#9993;</span>
+                    support@ceruleanvector.com
+                </li>
+                <li>
+                    <span class="link-icon">&#128205;</span>
+                    Remote-first, Global Team
+                </li>
+                <li>
+                    <span class="link-icon">&#128421;</span>
+                    github.com/cerulean-vector
+                </li>
+            </ul>
+        </div>
+
+        <div class="contact-form" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+            <div style="font-size:3rem;margin-bottom:1.5rem;">&#9993;</div>
+            <h3 style="margin-bottom:0.75rem;">Ready to get started?</h3>
+            <p style="color:var(--text-secondary);margin-bottom:2rem;line-height:1.7;">Drop us an email and we'll get back to you within 24 hours.</p>
+            <a href="mailto:support@ceruleanvector.com" class="btn btn-primary" style="font-size:1.1rem;padding:1rem 2.5rem;">support@ceruleanvector.com</a>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <p>&copy; 2026 Cerulean Vector LLC. All rights reserved.</p>
+</footer>
+
+<script>
+// ── Particle animation ──
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+class Particle {
+    constructor() {
+        this.reset();
+    }
+    reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.3;
+        this.speedY = (Math.random() - 0.5) * 0.3;
+        this.opacity = Math.random() * 0.5 + 0.1;
+    }
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+            this.reset();
+        }
+    }
+    draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0, 153, 221, ${this.opacity})`;
+        ctx.fill();
+    }
+}
+
+for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+function drawLines() {
+    for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 150) {
+                ctx.beginPath();
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(particles[j].x, particles[j].y);
+                ctx.strokeStyle = `rgba(0, 153, 221, ${0.06 * (1 - dist / 150)})`;
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+            }
+        }
+    }
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => { p.update(); p.draw(); });
+    drawLines();
+    requestAnimationFrame(animate);
+}
+animate();
+
+// ── Scroll reveal ──
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+</script>
+
+</body>
+</html>
